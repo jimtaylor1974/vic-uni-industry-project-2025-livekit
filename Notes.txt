@@ -1,0 +1,78 @@
+I am building a proof of concept API in .NET using minimal APIs.
+
+I will provide you with the Program.cs
+
+The aim of the proof of concept is to provide an API that can be used by a voice assistant.
+The voice assistant will be acting as a virtual receptionist and a fictional company.
+The assistant will be using Tool Calling to invoke several API endpoints related to vistor management.
+
+In the short term as this is a demo we won't need to persist data to a database - in memory store is fine - however as it progresses
+we may upgrade to use an SQL database via EF Core.
+
+The vistitor management scenarios that we want to explore are the following.
+
+Vistor arrives
+
+-> Here for meeting -> Who with -> Look up employees -> Send notification -> Inform vistor that "Who" has been notified.
+
+-> Courier -> Notify reception (real person) -> Tell courier to leave at parcel location
+
+-> "I'm here to fix the taps in level 4 bathroom" - detect that visitor is a contractor - ask company - check is in approved companies list - notify reception
+
+-> Vistor is already on site and is checking / signing out
+
+-> Receptionist enquiry - who is on site
+
+Please consider exceptions to expected flow e.g. employee not found etc.
+In all cases we would expect a text response so that the voice assistant can interact with the visitor or receptionist
+
+Think about the required entities - employees, receptionist, visitor, and their attributes and any useful data to capture like dates/times etc
+
+Here is the current Program.cs
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+var summaries = new[]
+{
+    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+};
+
+app.MapGet("/weatherforecast", () =>
+{
+    var forecast = Enumerable.Range(1, 5).Select(index =>
+        new WeatherForecast
+        (
+            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+            Random.Shared.Next(-20, 55),
+            summaries[Random.Shared.Next(summaries.Length)]
+        ))
+        .ToArray();
+    return forecast;
+})
+.WithName("GetWeatherForecast")
+.WithOpenApi();
+
+app.Run();
+
+internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+{
+    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+}
+
+Please implement the requirements following the existing API pattern (WithName, WithOpenApi)
