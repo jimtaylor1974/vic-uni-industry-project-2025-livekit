@@ -1,0 +1,6 @@
+@VicUniIndustryProject2025LiveKit_HostAddress = http://localhost:5070
+
+GET {{VicUniIndustryProject2025LiveKit_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
